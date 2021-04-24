@@ -1,5 +1,5 @@
-use legion::*;
 use legion::world::SubWorld;
+use legion::*;
 use macroquad::prelude::*;
 
 use crate::components;
@@ -62,6 +62,7 @@ pub fn clear_screen(#[resource] game_settings: &resources::GameSettings) {
 }
 
 pub const FPS_HISTORY_SIZE: usize = 60;
+
 #[system]
 pub fn draw_fps(
     #[state] history_index: &mut usize,
@@ -99,7 +100,7 @@ pub fn draw_fps(
 }
 
 #[system(for_each)]
-#[filter(component::<components::PlayerController>())]
+#[filter(component::< components::PlayerController > ())]
 pub fn control_rotation(
     transform: &mut components::Transform,
     velocity: &mut components::Velocity,
@@ -135,7 +136,7 @@ pub fn control_rotation(
 }
 
 #[system(for_each)]
-#[filter(component::<components::PlayerController>())]
+#[filter(component::< components::PlayerController > ())]
 pub fn spawn_bullets(
     transform: &mut components::Transform,
     #[resource] game_settings: &resources::GameSettings,
@@ -144,33 +145,30 @@ pub fn spawn_bullets(
     if is_key_down(KeyCode::Space) {
         let rotation = Mat2::from_angle(transform.rotation.to_radians());
         let velocity = rotation * vec2(0.0, 1.0);
-        cmd.push(
-            (
-                components::Bullet {
+        cmd.push((
+            components::Bullet {},
+            components::Transform {
+                position: transform.position,
+                rotation: transform.rotation,
+            },
+            components::Velocity {
+                vector: velocity * 100.0,
+            },
+            components::Visual {
+                color: game_settings.bullet_color,
+                shape: components::Shape::Triangle {
+                    width: game_settings.bullet_size,
+                    height: game_settings.bullet_size,
                 },
-                components::Transform {
-                    position: transform.position,
-                    rotation: transform.rotation,
-                },
-                components::Velocity {
-                    vector: velocity * 100.0,
-                },
-                components::Visual {
-                    color: game_settings.bullet_color,
-                    shape: components::Shape::Triangle {
-                        width: game_settings.bullet_size,
-                        height: game_settings.bullet_size,
-                    },
-                },
-                components::DespawnWhenOffScreen {
-                    outer_bounds_radius: game_settings.bullet_size,
-                    despawn_delay: 0.0,
-                },
-                components::Collider {
-                    radius: game_settings.bullet_size / 2.0,
-                },
-            )
-        );
+            },
+            components::DespawnWhenOffScreen {
+                outer_bounds_radius: game_settings.bullet_size,
+                despawn_delay: 0.0,
+            },
+            components::Collider {
+                radius: game_settings.bullet_size / 2.0,
+            },
+        ));
     }
 }
 
@@ -184,13 +182,16 @@ pub fn spawn_asteroids(
     if *timer < 0.0 {
         let radius = macroquad::rand::gen_range(
             game_settings.asteroid_size.0,
-            game_settings.asteroid_size.1);
+            game_settings.asteroid_size.1,
+        );
         let outer_bounds_radius = radius;
 
-        let mut angle = macroquad::rand::gen_range(-std::f32::consts::PI / 4.0, std::f32::consts::PI / 4.0);
+        let mut angle =
+            macroquad::rand::gen_range(-std::f32::consts::PI / 4.0, std::f32::consts::PI / 4.0);
         let position = macroquad::rand::gen_range(
             0.0,
-            2.0 * (game_settings.resolution.x + game_settings.resolution.y));
+            2.0 * (game_settings.resolution.x + game_settings.resolution.y),
+        );
         let position = {
             let mut position = position;
             if position < game_settings.resolution.x {
@@ -199,12 +200,14 @@ pub fn spawn_asteroids(
                 position -= game_settings.resolution.x;
                 if position < game_settings.resolution.y {
                     angle += std::f32::consts::PI / 2.0;
-                    vec2(game_settings.resolution.x + outer_bounds_radius, position) // right
+                    vec2(game_settings.resolution.x + outer_bounds_radius, position)
+                // right
                 } else {
                     position -= game_settings.resolution.y;
                     if position < game_settings.resolution.x {
                         angle += std::f32::consts::PI;
-                        vec2(position, game_settings.resolution.y + outer_bounds_radius) // bottom
+                        vec2(position, game_settings.resolution.y + outer_bounds_radius)
+                    // bottom
                     } else {
                         position -= game_settings.resolution.x;
                         angle -= std::f32::consts::PI / 2.0;
@@ -219,37 +222,32 @@ pub fn spawn_asteroids(
         let velocity = rotation * vec2(0.0, 1.0);
         let speed = macroquad::rand::gen_range(
             game_settings.asteroid_speed.0,
-            game_settings.asteroid_speed.1);
-        cmd.push(
-            (
-                components::Asteroid {
-                },
-                components::Transform {
-                    position,
-                    rotation: 0.0,
-                },
-                components::Velocity {
-                    vector: velocity * speed,
-                },
-                components::Visual {
-                    color: game_settings.asteroid_color,
-                    shape: components::Shape::Circle {
-                        radius,
-                    },
-                },
-                components::DespawnWhenOffScreen {
-                    outer_bounds_radius: radius,
-                    despawn_delay: 0.0,
-                },
-                components::Collider {
-                    radius,
-                },
-            )
+            game_settings.asteroid_speed.1,
         );
+        cmd.push((
+            components::Asteroid {},
+            components::Transform {
+                position,
+                rotation: 0.0,
+            },
+            components::Velocity {
+                vector: velocity * speed,
+            },
+            components::Visual {
+                color: game_settings.asteroid_color,
+                shape: components::Shape::Circle { radius },
+            },
+            components::DespawnWhenOffScreen {
+                outer_bounds_radius: radius,
+                despawn_delay: 0.0,
+            },
+            components::Collider { radius },
+        ));
 
         *timer = macroquad::rand::gen_range(
             game_settings.asteroid_spawn_delay.0,
-            game_settings.asteroid_spawn_delay.1);
+            game_settings.asteroid_spawn_delay.1,
+        );
     } else {
         *timer -= delta_time.seconds;
     }
@@ -267,8 +265,11 @@ pub fn despawn_objects(
         let position = transform.position;
         let position = position + game_settings.resolution / 2.0;
         let outer_bounds_radius = despawn.outer_bounds_radius;
-        if position.x < -outer_bounds_radius || game_settings.resolution.x + outer_bounds_radius < position.x ||
-            position.y < -outer_bounds_radius || game_settings.resolution.y + outer_bounds_radius < position.y {
+        if position.x < -outer_bounds_radius
+            || game_settings.resolution.x + outer_bounds_radius < position.x
+            || position.y < -outer_bounds_radius
+            || game_settings.resolution.y + outer_bounds_radius < position.y
+        {
             cmd.remove(*entity);
         }
     }
@@ -279,8 +280,7 @@ pub fn move_transform(
     transform: &mut components::Transform,
     velocity: &components::Velocity,
     #[resource] delta_time: &resources::DeltaTime,
-)
-{
+) {
     transform.position += velocity.vector * delta_time.seconds;
 }
 
@@ -288,13 +288,16 @@ pub fn move_transform(
 pub fn increase_lifetime(
     despawn: &mut components::DespawnWhenOffScreen,
     #[resource] delta_time: &resources::DeltaTime,
-)
-{
+) {
     despawn.despawn_delay += delta_time.seconds;
 }
 
 #[system(for_each)]
-pub fn draw_visual(transform: &components::Transform, visual: &components::Visual) {
+pub fn draw_visual(
+    transform: &components::Transform,
+    visual: &components::Visual,
+    #[resource] global_state: &mut resources::GlobalState,
+) {
     match visual.shape {
         components::Shape::Triangle { width, height } => {
             let a = vec2(0.0, height / 2.0);
@@ -317,12 +320,29 @@ pub fn draw_visual(transform: &components::Transform, visual: &components::Visua
             let position = transform.position;
             draw_circle(position.x, position.y, radius, visual.color)
         }
+        components::Shape::Sprite { texture, size } => {
+            let position = transform.position;
+            let rotation = (transform.rotation + 180.0).to_radians();
+
+            let texture = global_state.textures[texture.index];
+            draw_texture_ex(
+                texture,
+                position.x - size.x / 2.0,
+                position.y - size.y / 2.0,
+                visual.color,
+                DrawTextureParams {
+                    dest_size: Some(size),
+                    rotation,
+                    ..Default::default()
+                },
+            );
+        }
     }
 }
 
 #[system(for_each)]
 #[read_component(components::Bullet)]
-#[filter(component::<components::Asteroid>())]
+#[filter(component::< components::Asteroid > ())]
 pub fn bullets_vs_asteroids(
     transform: &components::Transform,
     collider: &components::Collider,
@@ -344,7 +364,7 @@ pub fn bullets_vs_asteroids(
             remove = true;
             cmd.remove(*e);
         }
-    };
+    }
 
     if remove {
         cmd.remove(*entity);

@@ -4,6 +4,7 @@ use macroquad::prelude::*;
 mod components;
 mod resources;
 mod systems;
+mod utils;
 
 #[macroquad::main("Asteroids")]
 async fn main() {
@@ -13,6 +14,7 @@ async fn main() {
         player_color: WHITE,
         player_size: 20.0,
         player_max_speed: 200.0,
+        player_texture: "assets/playerShip1_green.png".to_string(),
         bullet_color: RED,
         bullet_size: 10.0,
         asteroid_color: BLUE,
@@ -22,8 +24,12 @@ async fn main() {
         min_lifetime: 1.0,
     };
 
+    let player_texture: Texture2D = load_texture(game_settings.player_texture.as_str()).await;
+    let textures = vec![player_texture];
+
     let mut world = World::default();
     world.extend(vec![(
+        // player entity
         components::Transform {
             position: Vec2::zero(),
             rotation: 0.0,
@@ -33,13 +39,12 @@ async fn main() {
         },
         components::Visual {
             color: game_settings.player_color,
-            shape: components::Shape::Triangle {
-                width: game_settings.player_size,
-                height: game_settings.player_size,
+            shape: components::Shape::Sprite {
+                texture: utils::TextureWrapper::new(0),
+                size: Vec2::one() * game_settings.player_size,
             },
         },
-        components::PlayerController {
-        },
+        components::PlayerController {},
         components::Collider {
             radius: game_settings.player_size / 2.0,
         },
@@ -68,6 +73,7 @@ async fn main() {
     resources.insert(game_settings);
     resources.insert(resources::GlobalState {
         camera: Camera2D::default(),
+        textures,
     });
 
     loop {

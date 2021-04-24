@@ -11,6 +11,7 @@ pub struct GameSettings {
     pub player_color: Color,
     pub player_size: f32,
     pub player_max_speed: f32,
+    pub player_texture: String,
     pub bullet_color: Color,
     pub bullet_size: f32,
     pub asteroid_color: Color,
@@ -22,4 +23,5 @@ pub struct GameSettings {
 
 pub struct GlobalState {
     pub camera: Camera2D,
+    pub textures: Vec<Texture2D>,
 }

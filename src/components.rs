@@ -1,5 +1,7 @@
 use macroquad::prelude::*;
 
+use crate::utils;
+
 #[derive(Clone, Copy, Debug, PartialEq)]
 pub struct Transform {
     pub position: Vec2,
@@ -22,8 +24,17 @@ pub struct Visual {
 
 #[derive(Clone, Copy, Debug, PartialEq)]
 pub enum Shape {
-    Triangle { width: f32, height: f32 },
-    Circle { radius: f32 },
+    Triangle {
+        width: f32,
+        height: f32,
+    },
+    Circle {
+        radius: f32,
+    },
+    Sprite {
+        texture: utils::TextureWrapper,
+        size: Vec2,
+    },
 }
 
 #[derive(Clone, Copy, Debug, PartialEq)]
@@ -38,7 +49,7 @@ pub struct DespawnWhenOffScreen {
 }
 
 #[derive(Clone, Copy, Debug, PartialEq)]
-pub struct Bullet { }
+pub struct Bullet {}
 
 #[derive(Clone, Copy, Debug, PartialEq)]
-pub struct Asteroid { }
+pub struct Asteroid {}
