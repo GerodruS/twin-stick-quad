@@ -1,4 +1,5 @@
 use macroquad::prelude::*;
+use macroquad::audio::*;
 
 #[derive(Clone, Copy, Debug, PartialEq)]
 pub struct DeltaTime {
@@ -17,6 +18,7 @@ pub struct GameSettings {
     pub bullet_size: f32,
     pub bullet_texture_rect: Rect,
     pub bullet_delay: f32,
+    pub bullet_spawn_sounds: Vec::<String>,
     pub asteroid_color: Color,
     pub asteroid_size: (f32, f32),
     pub asteroid_spawn_delay: (f32, f32),
@@ -29,4 +31,5 @@ pub struct GameSettings {
 pub struct GlobalState {
     pub camera: Camera2D,
     pub textures: Vec<Texture2D>,
+    pub bullet_spawn_sounds: Vec<Sound>,
 }

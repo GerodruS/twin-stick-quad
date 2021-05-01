@@ -1,5 +1,6 @@
 use legion::*;
 use macroquad::prelude::*;
+use macroquad::audio::*;
 
 mod components;
 mod resources;
@@ -20,6 +21,10 @@ async fn main() {
         bullet_size: 10.0,
         bullet_texture_rect: Rect::new(856.0, 983.0, 9.0, 37.0),
         bullet_delay: 0.1,
+        bullet_spawn_sounds: vec![
+            "assets/sfx_laser1.ogg".to_string(),
+            "assets/sfx_laser2.ogg".to_string(),
+        ],
         asteroid_color: WHITE,
         asteroid_size: (10.0, 50.0),
         asteroid_spawn_delay: (0.0, 1.0),
@@ -36,6 +41,12 @@ async fn main() {
 
     let sprites_sheet: Texture2D = load_texture(game_settings.sprites_sheet.as_str()).await.unwrap();
     let textures = vec![sprites_sheet];
+
+    let mut sounds = Vec::with_capacity(game_settings.bullet_spawn_sounds.len());
+    for bullet_spawn_sound in &game_settings.bullet_spawn_sounds {
+        let sound = load_sound(bullet_spawn_sound.as_str()).await.unwrap();
+        sounds.push(sound);
+    }
 
     let mut world = World::default();
     world.extend(vec![(
@@ -85,6 +96,7 @@ async fn main() {
     resources.insert(resources::GlobalState {
         camera: Camera2D::default(),
         textures,
+        bullet_spawn_sounds: sounds,
     });
 
     loop {

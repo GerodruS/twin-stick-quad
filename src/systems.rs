@@ -1,6 +1,7 @@
 use legion::world::SubWorld;
 use legion::*;
 use macroquad::prelude::*;
+use macroquad::audio::*;
 
 use crate::components;
 use crate::resources;
@@ -143,6 +144,7 @@ pub fn spawn_bullets(
     transform: &mut components::Transform,
     #[resource] delta_time: &resources::DeltaTime,
     #[resource] game_settings: &resources::GameSettings,
+    #[resource] global_state: &resources::GlobalState,
     cmd: &mut legion::systems::CommandBuffer,
 ) {
     if 0.0 < *delay {
@@ -150,6 +152,14 @@ pub fn spawn_bullets(
     } else if is_key_down(KeyCode::Space) {
         let rotation = Mat2::from_angle(transform.rotation.to_radians());
         let velocity = rotation * vec2(0.0, 1.0);
+
+        let sound = macroquad::rand::gen_range(
+            0,
+            global_state.bullet_spawn_sounds.len(),
+        );
+        let sound = global_state.bullet_spawn_sounds[sound];
+        play_sound_once(sound);
+
         cmd.push((
             components::Bullet {},
             components::Transform {
