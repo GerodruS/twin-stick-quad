@@ -4,6 +4,7 @@ use macroquad::prelude::*;
 
 use crate::components;
 use crate::resources;
+use crate::utils;
 
 #[system]
 pub fn update_screen_size(
@@ -156,9 +157,9 @@ pub fn spawn_bullets(
             },
             components::Visual {
                 color: game_settings.bullet_color,
-                shape: components::Shape::Triangle {
-                    width: game_settings.bullet_size,
-                    height: game_settings.bullet_size,
+                shape: components::Shape::Sprite {
+                    texture: utils::TextureWrapper::new(0, game_settings.bullet_texture_rect),
+                    size: Vec2::one() * game_settings.bullet_size,
                 },
             },
             components::DespawnWhenOffScreen {
@@ -224,6 +225,11 @@ pub fn spawn_asteroids(
             game_settings.asteroid_speed.0,
             game_settings.asteroid_speed.1,
         );
+        let rect_index = macroquad::rand::gen_range(
+            0,
+            game_settings.asteroids_texture_rect.len(),
+        );
+        let rect = game_settings.asteroids_texture_rect[rect_index];
         cmd.push((
             components::Asteroid {},
             components::Transform {
@@ -235,7 +241,10 @@ pub fn spawn_asteroids(
             },
             components::Visual {
                 color: game_settings.asteroid_color,
-                shape: components::Shape::Circle { radius },
+                shape: components::Shape::Sprite {
+                    texture: utils::TextureWrapper::new(0, rect),
+                    size: Vec2::one() * radius,
+                },
             },
             components::DespawnWhenOffScreen {
                 outer_bounds_radius: radius,
@@ -324,6 +333,7 @@ pub fn draw_visual(
             let position = transform.position;
             let rotation = (transform.rotation + 180.0).to_radians();
 
+            let rect = texture.rect;
             let texture = global_state.textures[texture.index];
             draw_texture_ex(
                 texture,
@@ -332,6 +342,7 @@ pub fn draw_visual(
                 visual.color,
                 DrawTextureParams {
                     dest_size: Some(size),
+                    source: Some(rect),
                     rotation,
                     ..Default::default()
                 },

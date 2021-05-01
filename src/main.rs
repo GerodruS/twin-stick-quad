@@ -11,21 +11,29 @@ async fn main() {
     let game_settings = resources::GameSettings {
         resolution: vec2(800.0, 600.0),
         back_color: BLACK,
+        sprites_sheet: "assets/sheet.png".to_string(),
         player_color: WHITE,
         player_size: 20.0,
         player_max_speed: 200.0,
-        player_texture: "assets/playerShip1_green.png".to_string(),
-        bullet_color: RED,
+        player_texture_rect: Rect::new(237.0, 377.0, 99.0, 75.0),
+        bullet_color: WHITE,
         bullet_size: 10.0,
-        asteroid_color: BLUE,
+        bullet_texture_rect: Rect::new(856.0, 983.0, 9.0, 37.0),
+        asteroid_color: WHITE,
         asteroid_size: (10.0, 50.0),
         asteroid_spawn_delay: (0.0, 1.0),
         asteroid_speed: (10.0, 50.0),
+        asteroids_texture_rect: vec![
+            Rect::new(224.0, 664.0, 101.0, 84.0),
+            Rect::new(0.0, 520.0, 120.0, 98.0),
+            Rect::new(518.0, 810.0, 89.0, 82.0),
+            Rect::new(327.0, 452.0, 98.0, 96.0),
+        ],
         min_lifetime: 1.0,
     };
 
-    let player_texture: Texture2D = load_texture(game_settings.player_texture.as_str()).await;
-    let textures = vec![player_texture];
+    let sprites_sheet: Texture2D = load_texture(game_settings.sprites_sheet.as_str()).await;
+    let textures = vec![sprites_sheet];
 
     let mut world = World::default();
     world.extend(vec![(
@@ -40,7 +48,7 @@ async fn main() {
         components::Visual {
             color: game_settings.player_color,
             shape: components::Shape::Sprite {
-                texture: utils::TextureWrapper::new(0),
+                texture: utils::TextureWrapper::new(0, game_settings.player_texture_rect),
                 size: Vec2::one() * game_settings.player_size,
             },
         },
