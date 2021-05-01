@@ -250,7 +250,7 @@ pub fn spawn_asteroids(
                 color: game_settings.asteroid_color,
                 shape: components::Shape::Sprite {
                     texture: utils::TextureWrapper::new(0, rect),
-                    size: Vec2::ONE * radius,
+                    size: Vec2::ONE * 2.0 * radius,
                 },
             },
             components::DespawnWhenOffScreen {
