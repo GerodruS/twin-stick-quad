@@ -19,6 +19,7 @@ async fn main() {
         bullet_color: WHITE,
         bullet_size: 10.0,
         bullet_texture_rect: Rect::new(856.0, 983.0, 9.0, 37.0),
+        bullet_delay: 0.1,
         asteroid_color: WHITE,
         asteroid_size: (10.0, 50.0),
         asteroid_spawn_delay: (0.0, 1.0),
@@ -64,7 +65,7 @@ async fn main() {
         .add_system(systems::control_rotation_system())
         .add_system(systems::move_transform_system())
         .add_system(systems::rotate_transform_system())
-        .add_system(systems::spawn_bullets_system())
+        .add_system(systems::spawn_bullets_system(0.0))
         .add_system(systems::spawn_asteroids_system(1.0))
         .add_system(systems::bullets_vs_asteroids_system())
         .add_system(systems::despawn_objects_system())

@@ -139,11 +139,15 @@ pub fn control_rotation(
 #[system(for_each)]
 #[filter(component::< components::PlayerController > ())]
 pub fn spawn_bullets(
+    #[state] delay: &mut f32,
     transform: &mut components::Transform,
+    #[resource] delta_time: &resources::DeltaTime,
     #[resource] game_settings: &resources::GameSettings,
     cmd: &mut legion::systems::CommandBuffer,
 ) {
-    if is_key_down(KeyCode::Space) {
+    if 0.0 < *delay {
+        *delay -= delta_time.seconds;
+    } else if is_key_down(KeyCode::Space) {
         let rotation = Mat2::from_angle(transform.rotation.to_radians());
         let velocity = rotation * vec2(0.0, 1.0);
         cmd.push((
@@ -170,6 +174,7 @@ pub fn spawn_bullets(
                 radius: game_settings.bullet_size / 2.0,
             },
         ));
+        *delay = game_settings.bullet_delay;
     }
 }
 

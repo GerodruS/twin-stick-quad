@@ -16,6 +16,7 @@ pub struct GameSettings {
     pub bullet_color: Color,
     pub bullet_size: f32,
     pub bullet_texture_rect: Rect,
+    pub bullet_delay: f32,
     pub asteroid_color: Color,
     pub asteroid_size: (f32, f32),
     pub asteroid_spawn_delay: (f32, f32),
