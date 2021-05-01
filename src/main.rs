@@ -32,24 +32,24 @@ async fn main() {
         min_lifetime: 1.0,
     };
 
-    let sprites_sheet: Texture2D = load_texture(game_settings.sprites_sheet.as_str()).await;
+    let sprites_sheet: Texture2D = load_texture(game_settings.sprites_sheet.as_str()).await.unwrap();
     let textures = vec![sprites_sheet];
 
     let mut world = World::default();
     world.extend(vec![(
         // player entity
         components::Transform {
-            position: Vec2::zero(),
+            position: Vec2::ZERO,
             rotation: 0.0,
         },
         components::Velocity {
-            vector: Vec2::zero(),
+            vector: Vec2::ZERO,
         },
         components::Visual {
             color: game_settings.player_color,
             shape: components::Shape::Sprite {
                 texture: utils::TextureWrapper::new(0, game_settings.player_texture_rect),
-                size: Vec2::one() * game_settings.player_size,
+                size: Vec2::ONE * game_settings.player_size,
             },
         },
         components::PlayerController {},
@@ -68,7 +68,7 @@ async fn main() {
         .add_system(systems::despawn_objects_system())
         .add_system(systems::increase_lifetime_system())
         // render
-        .add_system(systems::update_screen_size_system(0.0, Vec2::zero()))
+        .add_system(systems::update_screen_size_system(0.0, Vec2::ZERO))
         .add_system(systems::clear_screen_system())
         .add_system(systems::draw_visual_system())
         .add_system(systems::draw_fps_system(

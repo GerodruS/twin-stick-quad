@@ -42,10 +42,10 @@ pub fn update_screen_size(
 
         let camera = Camera2D {
             zoom: vec2(2.0 / virtual_screen_size.x, -2.0 / virtual_screen_size.y),
-            target: Vec2::zero(),
+            target: Vec2::ZERO,
             ..Default::default()
         };
-        set_camera(camera);
+        set_camera(&camera);
         global_state.camera = camera;
     }
 }
@@ -117,12 +117,12 @@ pub fn control_rotation(
     let angle = vector.angle_between(vec2(0.0, 1.0));
     transform.rotation = -angle.to_degrees();
 
-    let mut velocity_value = Vec2::zero();
+    let mut velocity_value = Vec2::ZERO;
     velocity_value += move_by_key(KeyCode::W, KeyCode::Up, vec2(0.0, -1.0));
     velocity_value += move_by_key(KeyCode::A, KeyCode::Left, vec2(-1.0, 0.0));
     velocity_value += move_by_key(KeyCode::S, KeyCode::Down, vec2(0.0, 1.0));
     velocity_value += move_by_key(KeyCode::D, KeyCode::Right, vec2(1.0, 0.0));
-    if velocity_value != Vec2::zero() {
+    if velocity_value != Vec2::ZERO {
         velocity_value = velocity_value.normalize();
     }
     velocity.vector = velocity_value * game_settings.player_max_speed;
@@ -131,7 +131,7 @@ pub fn control_rotation(
         if is_key_down(code_a) || is_key_down(code_b) {
             vec
         } else {
-            Vec2::zero()
+            Vec2::ZERO
         }
     }
 }
@@ -159,7 +159,7 @@ pub fn spawn_bullets(
                 color: game_settings.bullet_color,
                 shape: components::Shape::Sprite {
                     texture: utils::TextureWrapper::new(0, game_settings.bullet_texture_rect),
-                    size: Vec2::one() * game_settings.bullet_size,
+                    size: Vec2::ONE * game_settings.bullet_size,
                 },
             },
             components::DespawnWhenOffScreen {
@@ -243,7 +243,7 @@ pub fn spawn_asteroids(
                 color: game_settings.asteroid_color,
                 shape: components::Shape::Sprite {
                     texture: utils::TextureWrapper::new(0, rect),
-                    size: Vec2::one() * radius,
+                    size: Vec2::ONE * radius,
                 },
             },
             components::DespawnWhenOffScreen {
