@@ -23,6 +23,7 @@ async fn main() {
         asteroid_size: (10.0, 50.0),
         asteroid_spawn_delay: (0.0, 1.0),
         asteroid_speed: (10.0, 50.0),
+        asteroid_max_angular_velocity: 45.0,
         asteroids_texture_rect: vec![
             Rect::new(224.0, 664.0, 101.0, 84.0),
             Rect::new(0.0, 520.0, 120.0, 98.0),
@@ -62,6 +63,7 @@ async fn main() {
         // game logic
         .add_system(systems::control_rotation_system())
         .add_system(systems::move_transform_system())
+        .add_system(systems::rotate_transform_system())
         .add_system(systems::spawn_bullets_system())
         .add_system(systems::spawn_asteroids_system(1.0))
         .add_system(systems::bullets_vs_asteroids_system())

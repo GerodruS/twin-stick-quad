@@ -221,6 +221,10 @@ pub fn spawn_asteroids(
 
         let rotation = Mat2::from_angle(angle);
         let velocity = rotation * vec2(0.0, 1.0);
+        let angular_velocity = macroquad::rand::gen_range(
+            -game_settings.asteroid_max_angular_velocity,
+            game_settings.asteroid_max_angular_velocity,
+        );
         let speed = macroquad::rand::gen_range(
             game_settings.asteroid_speed.0,
             game_settings.asteroid_speed.1,
@@ -238,6 +242,9 @@ pub fn spawn_asteroids(
             },
             components::Velocity {
                 vector: velocity * speed,
+            },
+            components::AngularVelocity {
+                value: angular_velocity,
             },
             components::Visual {
                 color: game_settings.asteroid_color,
@@ -291,6 +298,15 @@ pub fn move_transform(
     #[resource] delta_time: &resources::DeltaTime,
 ) {
     transform.position += velocity.vector * delta_time.seconds;
+}
+
+#[system(for_each)]
+pub fn rotate_transform(
+    transform: &mut components::Transform,
+    angular_velocity: &components::AngularVelocity,
+    #[resource] delta_time: &resources::DeltaTime,
+) {
+    transform.rotation += angular_velocity.value * delta_time.seconds;
 }
 
 #[system(for_each)]

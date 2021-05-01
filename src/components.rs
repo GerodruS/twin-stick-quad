@@ -14,6 +14,11 @@ pub struct Velocity {
 }
 
 #[derive(Clone, Copy, Debug, PartialEq)]
+pub struct AngularVelocity {
+    pub value: f32,
+}
+
+#[derive(Clone, Copy, Debug, PartialEq)]
 pub struct PlayerController {}
 
 #[derive(Clone, Copy, Debug, PartialEq)]

@@ -20,6 +20,7 @@ pub struct GameSettings {
     pub asteroid_size: (f32, f32),
     pub asteroid_spawn_delay: (f32, f32),
     pub asteroid_speed: (f32, f32),
+    pub asteroid_max_angular_velocity: f32,
     pub asteroids_texture_rect: Vec::<Rect>,
     pub min_lifetime: f32,
 }
