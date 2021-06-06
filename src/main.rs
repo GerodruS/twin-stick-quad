@@ -106,6 +106,7 @@ async fn main() {
         });
         schedule.execute(&mut world, &mut resources);
 
+        egui_macroquad::draw();
         next_frame().await
     }
 }

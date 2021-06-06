@@ -70,7 +70,6 @@ pub fn draw_fps(
     #[state] history_index: &mut usize,
     #[state] history: &mut [f32; FPS_HISTORY_SIZE],
     #[resource] delta_time: &resources::DeltaTime,
-    #[resource] game_settings: &resources::GameSettings,
 ) {
     *history_index = (*history_index + 1) % FPS_HISTORY_SIZE;
     history[*history_index] = delta_time.seconds;
@@ -86,19 +85,17 @@ pub fn draw_fps(
     avg /= FPS_HISTORY_SIZE as f32;
 
     // TODO: add to settings
-    draw_text(
-        format!(
-            "{:.1}\n{:.1}\n{:.1}",
-            max * 1000.0,
-            avg * 1000.0,
-            min * 1000.0
-        )
-        .as_str(),
-        50.0 - game_settings.resolution.x / 2.0,
-        50.0 - game_settings.resolution.y / 2.0,
-        50.0,
-        WHITE,
-    );
+    egui_macroquad::ui(|egui_ctx| {
+        egui::Window::new("FPS")
+            .show(egui_ctx, |ui| {
+                ui.label(format!(
+                    "{:.1} {:.1} {:.1}",
+                    max * 1000.0,
+                    avg * 1000.0,
+                    min * 1000.0
+                ));
+            });
+    });
 }
 
 #[system(for_each)]
